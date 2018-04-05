@@ -1,11 +1,14 @@
 from flask import Flask, Blueprint
 from flask_restplus import Api, Resource, fields
+import json
+import psutil
 
-api_v1_cpu = Blueprint('api_v1_cpu', __name__, url_prefix='/api/1/cpu')
 
-api = Api(api_v1_cpu, version='1.0', title='Todo API',
-    description='A simple TODO API',
-)
+api_v1_memory = Blueprint('api_v1_memory', __name__, url_prefix='/api/1/memory')
+
+api = Api(api_v1_memory, version='1.0', title='Todo API',
+          description='A simple TODO API',
+          )
 
 ns = api.namespace('todos', description='TODO operations')
 
@@ -60,7 +63,25 @@ class Todo(Resource):
         TODOS[todo_id] = task
         return task
 
+''' /memory/virtual_memory'''
 
+
+@ns.route('/virtualMemory')
+class VirtualMemory(Resource):
+    def get(self):
+        '''Get Virtual Memory'''
+        vm = psutil.virtual_memory()
+        print(type(vm))
+        #sm = psutil.swap_memory()
+
+        # svmem(total=10367352832, available=6472179712, percent=37.6,
+        # used=8186245120, free=2181107712, active=4748992512, inactive=2758115328,
+        # buffers=790724608, cached=3500347392, shared=787554304)
+
+        #dict = {'virtualMemory':vm}
+        return [{'id': id, 'todo': todo} for id, todo in TODOS.items()]
+
+''' /memory/swap_memory'''
 @ns.route('/')
 class TodoList(Resource):
     '''Shows a list of all todos, and lets you POST to add new tasks'''
