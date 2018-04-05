@@ -1,3 +1,0 @@
-psutil.virtual_memory()
-
-psutil.swap_memory()
