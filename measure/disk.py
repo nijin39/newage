@@ -1,10 +1,14 @@
-from flask import Flask
-from flask import jsonify
+from flask import Flask, Blueprint, jsonify
+from flask_restplus import Api, Resource, fields
 import psutil
 
-app = Flask(__name__)
+api_v1_disk = Blueprint('api_v1_disk', __name__, url_prefix='/api/1/disk')
 
-@app.route("/disk/partitions")
+api = Api(api_v1_disk, version='1.0', title='Disk Information', description='Show Disk Information')
+
+ns = api.namespace('disk', description='Disk Information')
+
+
 def part():
     """
     psutil.disk_partitions()
@@ -13,10 +17,15 @@ def part():
 
     temp_part = psutil.disk_partitions()[0]
 
-    part = {"device": temp_part.device, "mountpoint" : temp_part.mountpoint, "fstype" : temp_part.fstype, "opts" : temp_part.opts}
-    return jsonify(Partitions = part)
+    part = {"device": temp_part.device, "mountpoint": temp_part.mountpoint, "fstype": temp_part.fstype,
+            "opts": temp_part.opts}
+    return part
 
-@app.route("/disk/usage")
+@ns.route('/partitions')
+class diskPartitions(Resource):
+    def get(self):
+        return jsonify(part())
+
 def usage():
     """
     psutil.disk_usage('/')
@@ -26,10 +35,13 @@ def usage():
     temp_usage = psutil.disk_usage('/')
 
     use = {"total" : temp_usage.total, "used" : temp_usage.used, "free" : temp_usage.free, "percent" : temp_usage.percent}
-    return jsonify(Usage = use)
+    return use
 
+@ns.route('/usage')
+class diskUsage(Resource):
+    def get(self):
+        return jsonify(usage())
 
-@app.route("/disk/io/counters")
 def count():
     '''
     psutil.disk_io_counters(perdisk=False)
@@ -39,8 +51,14 @@ def count():
     temp_count = psutil.disk_io_counters(perdisk=False)
 
     count = {"read_count" : temp_count.read_count, "write_count" : temp_count.write_count}
-    return jsonify(Counter = count)
+    return count
 
-if __name__ == "__main__":
-    app.run()
+@ns.route('/ioCounters')
+class diskIoCounters(Resource):
+    def get(self):
+        return jsonify(count())
 
+if __name__ == '__main__':
+    app = Flask(__name__)
+    app.register_blueprint(api_v1_disk)
+    app.run(debug=True)
