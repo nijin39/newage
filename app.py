@@ -8,5 +8,5 @@ if __name__ == '__main__':
     app = Flask(__name__)
     app.register_blueprint(api_v1_cpu)
     app.register_blueprint(api_v1_storage)
-    app.register_blueprinf(api_v1_disk)
+    app.register_blueprint(api_v1_disk)
     app.run(debug=True)
