@@ -1,12 +1,3 @@
-'''
-GET /process/
-[{process_name:cpu_usage},...]
-
-psutil.pids()
-psutil.Process(pid=?) => 'name' & .cpu_percent()
-
-'''
-
 from flask import Flask, Blueprint, jsonify
 from flask_restplus import Api, Resource, fields
 from processinfo import get_process_info
@@ -18,11 +9,15 @@ api = Api(api_v1_process, version='1.0', title='Process Info API',
 )
 
 ns = api.namespace('pcs', description='Process Info API')
+ERRMSG = "Error: can't get process information"
 
 @ns.route("/process")
 class GetProcessInfo(Resource):
     def get(self):
-        return jsonify(procinfo = get_process_info())
+        try:
+            return jsonify(procinfo = get_process_info())
+        except:
+            return ERRMSG
 
 if __name__ == '__main__':
     app = Flask(__name__)
