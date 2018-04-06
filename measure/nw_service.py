@@ -1,4 +1,4 @@
-import psutil
+import psutil, subprocess
 
 def getNIC():
     return {"net_io_counters" : psutil.net_io_counters()._asdict()}
@@ -20,3 +20,9 @@ def getIS():
     for key in data:
         ans[key] = data[key]._asdict()
     return {"net_if_stats" : ans}
+
+def executeCommand(cmd):
+    with psutil.Popen(cmd, stdout=subprocess.PIPE) as proc:
+        data = proc.stdout.read().decode('utf-8')
+
+    return data

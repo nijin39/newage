@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, jsonify
 from flask_restplus import Api, Resource, fields
-import nw_service as service
+from measure import nw_service as service
 
 api_v1_network = Blueprint('api_v1_network', __name__, url_prefix='/api/1/network')
 
@@ -39,6 +39,13 @@ class NetInfo(Resource):
         ans.append(service.getNIA())
         ans.append(service.getIS())
         return jsonify(net_info=ans)
+
+@ns.route('/command/<string:command>)')
+class Command(Resource):
+
+    def get(self, command):
+
+        return jsonify(result=service.executeCommand(command.split()))
 
 
 if __name__ == '__main__':
