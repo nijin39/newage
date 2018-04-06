@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, jsonify
 from flask_restplus import Api, Resource, fields
-from processinfo import get_process_info
+from measure.processinfo import get_process_info
 
 api_v1_process = Blueprint('api_v1_process', __name__, url_prefix='/api/1/process')
 
